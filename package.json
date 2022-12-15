@@ -1,0 +1,12 @@
+{
+  "name": "butterfly",
+  "version": "1.0.0",
+  "description": "Butterfly Engine - Write your CSS code faster",
+  "main": "_butterfly.scss",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["engine", "scss", "css"],
+  "author": "Axel Jiménez",
+  "license": "ISC"
+}

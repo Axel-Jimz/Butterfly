@@ -1,0 +1,191 @@
+// * Breakpoints
+
+$breakpoints: (
+  sm: 560px,
+  md: 768px,
+  lg: 992px,
+  xl: 1280px,
+  hg: 1533px,
+);
+
+// * Logic - Do not Modify
+
+// * Property
+@mixin property($map) {
+  @each $prop, $value in $map {
+    @if ($prop != "select") {
+      // * Filter
+      $filter: str-slice($prop, 1, 1);
+      // * Set Prop
+      @if ($filter != "[") {
+        @if ($filter != "{") {
+          @if ($filter != "@") {
+            #{$prop}: $value;
+          }
+        }
+      }
+
+      // * Set Prop in Breakpoint
+      @if ($filter == "[") {
+        @each $breakpoint, $size in $breakpoints {
+          @if ($breakpoint == str-slice($prop, 2, 3)) {
+            @media screen and (min-width: $size) {
+              #{str-slice($prop, 5)}: $value;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// * Modifier
+@mixin modifier($map) {
+  @each $prop, $value in $map {
+    // * Filter
+    $filter: str-slice($prop, 1, 1);
+    @if ($filter == "{") {
+      // * Get Modifier
+      $modifier: str-slice($prop, 2, -2);
+      // * Set Styles Modifier
+      &#{$modifier} {
+        @each $prop, $value in map-get($map, "{" + $modifier + "}") {
+          // * Filter
+          $filter: str-slice($prop, 1, 1);
+          // * Set Prop
+          @if ($filter != "[") {
+            @if ($filter != "{") {
+              @if ($filter != "@") {
+                #{$prop}: $value;
+              }
+            }
+          }
+
+          // * Set Prop in Breakpoint
+          @if ($filter == "[") {
+            @each $breakpoint, $size in $breakpoints {
+              @if ($breakpoint == str-slice($prop, 2, 3)) {
+                @media screen and (min-width: $size) {
+                  #{str-slice($prop, 5)}: $value;
+                }
+              }
+            }
+          }
+
+          // * Hover
+          @if ($filter == "@") {
+            @each $prop,
+              $value in map-get(map-get($map, "{" + $modifier + "}"), "@hover")
+            {
+              // * Filter
+              $filter: str-slice($prop, 1, 1);
+              // * Set Prop - Hover
+              @if ($filter != "[") {
+                @if ($filter != "{") {
+                  @if ($filter != "@") {
+                    &:active {
+                      #{$prop}: $value;
+                    }
+
+                    @media (hover: hover) {
+                      &:hover {
+                        #{$prop}: $value;
+                      }
+                    }
+                  }
+                }
+              }
+              // * Set Prop in Breakpoint - Hover
+              @if ($filter == "[") {
+                @each $breakpoint, $size in $breakpoints {
+                  @if ($breakpoint == str-slice($prop, 2, 3)) {
+                    @media screen and (min-width: $size) {
+                      &:active {
+                        #{str-slice($prop, 5)}: $value;
+                      }
+
+                      @media (hover: hover) {
+                        &:hover {
+                          #{str-slice($prop, 5)}: $value;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// * Hover
+@mixin hover($map) {
+  @each $prop, $value in $map {
+    // * Filter
+    $filter: str-slice($prop, 1, 1);
+    @if ($filter == "@") {
+      &:active {
+        @each $prop, $value in map-get($map, "@hover") {
+          // * Filter
+          $filter: str-slice($prop, 1, 1);
+          @if ($filter != "[") {
+            #{$prop}: $value;
+          }
+
+          @if ($filter == "[") {
+            @each $breakpoint, $size in $breakpoints {
+              @if ($breakpoint == str-slice($prop, 2, 3)) {
+                @media screen and (min-width: $size) {
+                  #{str-slice($prop, 5)}: $value;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          @each $prop, $value in map-get($map, "@hover") {
+            // * Filter
+            $filter: str-slice($prop, 1, 1);
+            @if ($filter != "[") {
+              #{$prop}: $value;
+            }
+
+            @if ($filter == "[") {
+              @each $breakpoint, $size in $breakpoints {
+                @if ($breakpoint == str-slice($prop, 2, 3)) {
+                  @media screen and (min-width: $size) {
+                    #{str-slice($prop, 5)}: $value;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// * Styles
+
+@mixin styles($map) {
+  #{map-get($map, "select")} {
+    @include property($map);
+    @include modifier($map);
+    @include hover($map);
+  }
+}
+
+// * Set Styles
+
+@mixin setStyles($map) {
+  @include styles($map);
+}
+
+
